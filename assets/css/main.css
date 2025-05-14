@@ -1,0 +1,40 @@
+@import "tailwindcss" theme(static);
+@import "@nuxt/ui";
+@import "./theme.css";
+
+@layer base {
+  @import url("http://fonts.googleapis.com/earlyaccess/nanumgothic.css");
+}
+@font-face {
+  font-family: "April16th-Promise";
+  src:
+    url("../fonts/April16th-Promise.woff2") format("woff2"),
+    url("../fonts/April16th-Promise.woff") format("woff");
+  font-display: swap;
+}
+
+html,
+body {
+  letter-spacing: -0.1em;
+  font-family: "April16th-Promise", sans-serif;
+}
+
+.font-nanum {
+  font-family: "Nanum Gothic", sans-serif;
+  letter-spacing: -0.05em;
+}
+
+html,
+body,
+* {
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-primary-500);
+    border-radius: 0;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: var(--color-primary-50);
+  }
+}
