@@ -6,28 +6,29 @@
   >
     <div class="container mx-auto pt-12 pointer-events-none">
       <ul
-        class="py-20 px-4 lg:px-12 inline-flex flex-wrap justify-center gap-2"
+        class="py-20 px-2 lg:px-12 lg:py-20 inline-flex flex-wrap justify-center gap-1 lg:gap-2"
       >
         <transition-group name="fade">
           <li v-for="index in items" :key="index">
-            <div class="max-lg:w-[24vw] w-[180px] max-lg:h-[24vw] h-[180px]">
+            <div class="max-lg:w-[21vw] w-[180px] max-lg:h-[21vw] h-[180px]">
               <div
-                class="px-2 lg:p-3 py-4 border-2 border-primary-400 w-full h-full flex-col items-stretch justify-stretch"
+                class="px-1 py-1 lg:px-2 lg:py-2 border-2 border-primary-400 w-full h-full"
               >
-                <!-- box-header -->
-                <div class="bg-box w-full h-2/12 rounded-t-lg"></div>
-                <!-- box-inner -->
-                <div class="bg-box w-full h-7/12 my-1">
-                  <div class="w-full h-full flex items-center justify-center">
-                    <h3
-                      class="text-center text-lg lg:text-2xl text-primary-700"
-                    >
-                      {{ index }}
-                    </h3>
-                  </div>
+                <div
+                  class="box-wrap w-full h-full flex-col items-stretch justify-stretch relative"
+                >
+                  <img
+                    :src="`/icons/box.svg`"
+                    :alt="`유골함 ${index}번째 이미지`"
+                    class="w-full h-full"
+                    sizes="180px"
+                  />
+                  <span
+                    class="text-primary-600 text-base lg:text-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                  >
+                    {{ index }}
+                  </span>
                 </div>
-                <!-- box-footer -->
-                <div class="bg-box h-2/12 rounded-b-xl w-[98%] mx-auto"></div>
               </div>
             </div>
           </li>
@@ -51,26 +52,26 @@
     class="w-full h-full max-h-[30vh] bg-linear-to-b from-primary-900 to-primary-700 py-2"
   >
     <div
-      class="container mx-auto h-full flex flex-col items-center text-center justify-center text-primary-200 mix-blend-difference"
+      class="container px-4 mx-auto h-full flex flex-col items-center text-center justify-center text-primary-200 mix-blend-difference"
     >
-      <h3 class="max-lg:text-6xl text-8xl mb-6">
+      <h3 class="max-lg:text-5xl text-8xl mb-6">
         {{ formatNumber(transitionedNumber) }} 명
       </h3>
       <transition name="fade" mode="out-in">
         <div
-          class="text-center max-lg:text-2xl text-4xl min-h-[40px]"
+          class="text-center max-lg:text-xl text-4xl min-h-[40px]"
           :key="currentMessage"
         >
           {{ currentMessage }}
         </div>
       </transition>
-      <div class="flex items-center justify-between w-full mt-6">
+      <div class="flex items-center justify-between w-full my-3">
         <template v-if="isLoadAll">
           <UButton
             class="font-nanum hover:cursor-pointer font-bold"
             color="black"
             label="초기화"
-            icon="system-uicons:reset-alt"
+            icon="mdi:backup-restore"
             size="xl"
             @click="resetList()"
           />
@@ -80,7 +81,7 @@
             class="font-nanum hover:cursor-pointer font-bold"
             color="black"
             label="모두 보기"
-            icon="material-symbols:background-grid-small-sharp"
+            icon="mdi:grid"
             size="xl"
             @click="listAll()"
           />
@@ -91,7 +92,7 @@
               class="font-nanum hover:cursor-pointe"
               variant="link"
               color="white"
-              icon="ic:outline-info"
+              icon="mdi:information"
               size="xl"
             />
 
@@ -105,7 +106,13 @@
                   - 조지 오웰, &lt;동물농장&gt;
                 </span>
               </header>
-              <div class="font-nanum p-5">this is content</div>
+              <div class="font-nanum p-5">
+                대한민국은 2023년, 13,978명의 자살 사망자가 있었습니다. 10만명
+                당 32.3명이 자살하고 있습니다. 2024년도의 잠정치는 이보다 더
+                많을 것으로 예상됩니다. <br />
+                그럼에도 우리는 단순히 많다고만 느낄 뿐, 마주하지 않고 피하고
+                있습니다.
+              </div>
             </template>
           </UModal>
         </span>
@@ -121,6 +128,7 @@ const scrollableSection = ref(null);
 const items = ref(0);
 const isLoadAll = ref(false);
 const currentMessage = ref("");
+const itemImageMap = reactive(new Map()); // 각 아이템의 이미지 번호를 저장하는 맵
 
 const { isScrolling } = useScroll(scrollableSection);
 const scrolled = ref(0);
@@ -144,6 +152,10 @@ const transitionedNumber = useTransition(items, {
 watch(items, (newValue) => {
   if (countMessages[newValue]) {
     currentMessage.value = countMessages[newValue];
+  }
+  // 새로운 아이템이 추가될 때 이미지 번호 할당
+  if (!itemImageMap.has(newValue)) {
+    itemImageMap.set(newValue, getRandomNumber(0, 15));
   }
 });
 
@@ -185,29 +197,42 @@ function resetList() {
 function formatNumber(num) {
   return Math.round(num).toLocaleString("ko-KR");
 }
+
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 </script>
 
 <style lang="postcss" scoped>
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 1.5s ease-in-out;
+  .box-wrap {
+    transition: transform 1.5s ease-in-out;
+    transform: scale(1);
+  }
 }
 
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+  .box-wrap {
+    transform: scale(1.2);
+  }
 }
 
-.bg-box {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0.8) 15%,
-    rgba(255, 255, 255, 1) 50%,
-    rgba(255, 255, 255, 0.8) 85%,
-    rgba(255, 255, 255, 0.95) 87%,
-    rgba(255, 255, 255, 0.8) 89%,
-    rgba(255, 255, 255, 0.1) 100%
-  );
+.box-wrap {
+  /* .bg-box {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.8) 15%,
+      rgba(255, 255, 255, 1) 50%,
+      rgba(255, 255, 255, 0.8) 85%,
+      rgba(255, 255, 255, 0.95) 87%,
+      rgba(255, 255, 255, 0.8) 89%,
+      rgba(255, 255, 255, 0.1) 100%
+    );
+  } */
 }
 </style>
